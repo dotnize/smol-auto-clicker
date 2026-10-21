@@ -46,11 +46,7 @@ try {
         $env:GOARCH = $arch
         $env:CGO_ENABLED = '0'
         go vet .
-        $portable = New-Item "$dist/$machine" -ItemType Directory
-        go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$portable/smol-auto-clicker.exe" .
-        Copy-Item "$root/LICENSE" $portable
-        Copy-Item $goLicense "$portable/GO-LICENSE.txt"
-        Compress-Archive "$portable/*" "$dist/smol-auto-clicker-$Tag-windows-$machine.zip"
+        go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$dist/smol-auto-clicker-$Tag-windows-$machine.exe" .
     }
 } finally {
     Pop-Location
@@ -75,7 +71,9 @@ if ($configured -eq 3) {
     try {
         foreach ($arch in 'x64', 'arm64') {
             $package = New-Item "$build/package-$arch" -ItemType Directory
-            Copy-Item "$dist/$arch/*" $package
+            Copy-Item "$dist/smol-auto-clicker-$Tag-windows-$arch.exe" "$package/smol-auto-clicker.exe"
+            Copy-Item "$root/LICENSE" $package
+            Copy-Item $goLicense "$package/GO-LICENSE.txt"
             $assets = New-Item "$package/Assets" -ItemType Directory
             foreach ($logo in @{ StoreLogo = 50; Square44x44Logo = 44; Square150x150Logo = 150 }.GetEnumerator()) {
                 $bitmap = [System.Drawing.Bitmap]::new($logo.Value, $logo.Value)
@@ -106,12 +104,15 @@ if ($configured -eq 3) {
     Write-Warning 'Store identity is not configured; preparing portable downloads only.'
 }
 
-Get-ChildItem $dist -File | Where-Object { $_.Extension -in '.zip', '.msixbundle' } | Sort-Object Name | ForEach-Object {
+Get-ChildItem $dist -File | Where-Object { $_.Extension -in '.exe', '.msixbundle' } | Sort-Object Name | ForEach-Object {
     '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name
 } | Set-Content "$dist/SHA256SUMS.txt" -Encoding ascii
-@'
-Download the Windows x64 or ARM64 ZIP, extract it, and run smol-auto-clicker.exe.
-These portable builds are unsigned and may show Windows security warnings.
-The unsigned MSIX bundle, when present, is for Microsoft Store submission.
-'@ | Set-Content "$dist/notes.md" -Encoding utf8
-Remove-Item "$dist/.build", "$dist/x64", "$dist/arm64" -Recurse -Force
+@(
+    '<details>'
+    '<summary>License notices</summary>'
+    ''
+    (Get-Content "$root/LICENSE" -Raw)
+    (Get-Content $goLicense -Raw)
+    '</details>'
+) -join "`n" | Set-Content "$dist/notes.md" -Encoding utf8
+Remove-Item "$dist/.build" -Recurse -Force
