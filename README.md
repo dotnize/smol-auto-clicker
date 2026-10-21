@@ -2,7 +2,7 @@
 
 <img src="assets/icon.png" alt="Smol Auto Clicker icon" width="128" height="128">
 
-A small Windows autoclicker with repeat-click and button-hold modes. Written in
+A minimal Windows autoclicker with repeat-click and button-hold modes. Written in
 Go using Win32 directly, with no third-party dependencies or runtime to install.
 
 ## Use
