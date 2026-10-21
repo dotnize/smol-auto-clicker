@@ -13,6 +13,16 @@ if ($version.Major -lt 1 -or $version.Major -gt 65535 -or $version.Minor -gt 655
 }
 
 $root = Split-Path $PSScriptRoot -Parent
+$rc = Join-Path $env:ProgramFiles 'LLVM/bin/llvm-rc.exe'
+$objcopy = Join-Path $env:ProgramFiles 'LLVM/bin/llvm-objcopy.exe'
+$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+if (!(Test-Path $rc)) { throw 'LLVM llvm-rc.exe was not found.' }
+if (!(Test-Path $objcopy)) { throw 'LLVM llvm-objcopy.exe was not found.' }
+if (!(Test-Path $vswhere)) { throw 'Visual Studio Installer vswhere.exe was not found.' }
+$cvtres = & $vswhere -latest -products '*' -find 'VC\Tools\MSVC\*\bin\Hostx64\x64\cvtres.exe' |
+    Select-Object -First 1
+if (!$cvtres) { throw 'MSVC cvtres.exe was not found. Install the Visual Studio C++ build tools.' }
+
 $dist = Join-Path $root 'dist'
 if (Test-Path $dist) { throw 'Remove the existing dist directory before building another release.' }
 $build = New-Item "$dist/.build" -ItemType Directory -Force
@@ -24,15 +34,14 @@ $resource = Get-Content "$root/assets/resources.rc" -Raw
 $resource = $resource -replace '(?m)^(FILEVERSION|PRODUCTVERSION) .+$', ('${1} ' + $version.ToString().Replace('.', ','))
 $resource = $resource -replace '(VALUE "(?:FileVersion|ProductVersion)", ")[^"]*', ('${1}' + $version + '\0')
 Set-Content "$build/resources.rc" $resource -Encoding utf8
-$llvm = Join-Path $env:ProgramFiles 'LLVM/bin'
-$rc = Join-Path $llvm 'llvm-rc.exe'
-$cvtres = Join-Path $llvm 'llvm-cvtres.exe'
 Push-Location $build
 try {
     & $rc /no-preprocess /fo resources.res resources.rc
     foreach ($arch in 'amd64', 'arm64') {
         $machine = if ($arch -eq 'amd64') { 'x64' } else { 'arm64' }
-        & $cvtres "/machine:$machine" /timestamp:0 "/out:resources_windows_$arch.syso" resources.res
+        & $cvtres /nologo "/machine:$machine" "/out:resources_windows_$arch.syso" resources.res
+        # Remove MSVC compiler metadata that Go's linker does not accept.
+        & $objcopy --strip-debug --strip-symbol=@comp.id "resources_windows_$arch.syso"
         $env:GOOS = 'windows'
         $env:GOARCH = $arch
         $env:CGO_ENABLED = '0'

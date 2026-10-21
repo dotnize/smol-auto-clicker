@@ -33,14 +33,16 @@ Linux or macOS, prefix the build command with
 <summary>Updating the icon or Windows file details</summary>
 
 The checked-in `.syso` files embed the icon and file details. After changing
-`assets/icon.ico` or `assets/resources.rc`, regenerate both files with LLVM's
-resource tools:
+`assets/icon.ico` or `assets/resources.rc`, regenerate both files from a
+Visual Studio Developer PowerShell with LLVM installed:
 
-```sh
+```powershell
 cd assets
-llvm-rc /no-preprocess /fo resources.res resources.rc
-llvm-cvtres /machine:x64 /timestamp:0 /out:../resources_windows_amd64.syso resources.res
-llvm-cvtres /machine:arm64 /timestamp:0 /out:../resources_windows_arm64.syso resources.res
+& "$env:ProgramFiles/LLVM/bin/llvm-rc.exe" /no-preprocess /fo resources.res resources.rc
+cvtres /nologo /machine:x64 /out:../resources_windows_amd64.syso resources.res
+cvtres /nologo /machine:arm64 /out:../resources_windows_arm64.syso resources.res
+& "$env:ProgramFiles/LLVM/bin/llvm-objcopy.exe" --strip-debug --strip-symbol=@comp.id ../resources_windows_amd64.syso
+& "$env:ProgramFiles/LLVM/bin/llvm-objcopy.exe" --strip-debug --strip-symbol=@comp.id ../resources_windows_arm64.syso
 ```
 
 </details>
