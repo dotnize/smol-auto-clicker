@@ -47,6 +47,27 @@ cvtres /nologo /machine:arm64 /out:../resources_windows_arm64.syso resources.res
 
 </details>
 
+<details>
+<summary>Releasing</summary>
+
+1. Commit and push the version you want to release.
+2. Tag it and push the tag (replace `v1.0.0` with the next version):
+
+   ```sh
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+3. Wait for **Prepare release** to create a draft in GitHub Releases.
+4. Download and test the executables on Windows: click/hold, F6/F7, start delay,
+   and closing while holding. Review the release notes, then publish the draft.
+5. For Store updates, run **Actions → Submit to Store → Run workflow** on the
+   default branch and enter the same tag. Check Partner Center for certification.
+
+Use a new version for fixes; never move a published tag or replace its downloads.
+
+</details>
+
 ## License
 
 [MIT](LICENSE)

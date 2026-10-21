@@ -50,5 +50,5 @@ jobs:
           ($changes -join "`n") + "`n`n" + $notices | Set-Content dist/notes.md -Encoding utf8
           $files = (Get-ChildItem dist -File | Where-Object Name -ne 'notes.md').FullName
           gh release create $env:RELEASE_TAG @files --verify-tag --draft `
-            --title "Smol Auto Clicker $env:RELEASE_TAG" `
+            --title $env:RELEASE_TAG `
             --notes-file dist/notes.md
