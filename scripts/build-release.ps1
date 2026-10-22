@@ -111,8 +111,14 @@ Get-ChildItem $dist -File | Where-Object { $_.Extension -in '.exe', '.msixbundle
     '<details>'
     '<summary>License notices</summary>'
     ''
+    '```text'
     (Get-Content "$root/LICENSE" -Raw)
+    '```'
+    ''
+    '```text'
     (Get-Content $goLicense -Raw)
+    '```'
+    ''
     '</details>'
 ) -join "`n" | Set-Content "$dist/notes.md" -Encoding utf8
 Remove-Item "$dist/.build" -Recurse -Force
