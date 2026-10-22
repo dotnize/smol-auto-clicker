@@ -61,8 +61,8 @@ cvtres /nologo /machine:arm64 /out:../resources_windows_arm64.syso resources.res
 3. Wait for **Prepare release** to create a draft in GitHub Releases.
 4. Download and test the executables on Windows: click/hold, F6/F7, start delay,
    and closing while holding. Review the release notes, then publish the draft.
-5. For Store updates, run **Actions → Submit to Store → Run workflow** on the
-   default branch and enter the same tag. Check Partner Center for certification.
+5. Download the release's `.msixbundle` and upload it to a new submission in
+   Partner Center. Review and submit it, then check for certification results.
 
 Use a new version for fixes; never move a published tag or replace its downloads.
 
