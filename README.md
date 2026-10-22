@@ -5,6 +5,15 @@
 A minimal Windows autoclicker with repeat-click and button-hold modes. Written in
 Go using Win32 directly, with no third-party dependencies or runtime to install.
 
+## Download
+
+Download the latest version from [GitHub Releases](https://github.com/dotnize/smol-auto-clicker/releases)
+or install from the [Microsoft Store](https://apps.microsoft.com/detail/9nkcwj9z8kk0?referrer=appbadge&mode=full):
+
+<a href="https://apps.microsoft.com/detail/9nkcwj9z8kk0?referrer=appbadge&mode=full" target="_blank" rel="noopener noreferrer">
+  <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download from the Microsoft Store" width="200"/>
+</a>
+
 ## Use
 
 1. Choose **Left**, **Right**, or **Middle**, then **Click repeatedly** or **Hold down**.
