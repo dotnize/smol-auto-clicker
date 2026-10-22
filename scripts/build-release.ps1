@@ -46,7 +46,7 @@ try {
         $env:GOARCH = $arch
         $env:CGO_ENABLED = '0'
         go vet .
-        go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$dist/smol-auto-clicker-$Tag-windows-$machine.exe" .
+        go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$dist/smol-auto-clicker-$Tag-$machine.exe" .
     }
 } finally {
     Pop-Location
@@ -71,7 +71,7 @@ if ($configured -eq 3) {
     try {
         foreach ($arch in 'x64', 'arm64') {
             $package = New-Item "$build/package-$arch" -ItemType Directory
-            Copy-Item "$dist/smol-auto-clicker-$Tag-windows-$arch.exe" "$package/smol-auto-clicker.exe"
+            Copy-Item "$dist/smol-auto-clicker-$Tag-$arch.exe" "$package/smol-auto-clicker.exe"
             Copy-Item "$root/LICENSE" $package
             Copy-Item $goLicense "$package/GO-LICENSE.txt"
             $assets = New-Item "$package/Assets" -ItemType Directory
